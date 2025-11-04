@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-// import './TaskForm.css'; // 需创建对应的CSS文件
+import { useTasks } from '../context/TaskContext';
 
-const TaskForm = ({ onAdd }) => {
-  const [title, setTitle] = useState('');
+const TaskForm = () => {
+  const [input, setInput] = useState('');
+  const { addTask } = useTasks();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!title.trim()) return;
-    onAdd(title);
-    setTitle('');
+    const title = input.trim();
+    if (!title) return;
+    addTask(title);
+    setInput(''); // 清空输入框
   };
 
   return (
@@ -16,9 +18,9 @@ const TaskForm = ({ onAdd }) => {
       <div className="task-input">
         <input
           type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Enter new task"
+          placeholder="Enter a new task..."
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
         />
       </div>
 

@@ -1,34 +1,82 @@
-import React, { createContext, useReducer, useContext } from "react";
+import React, {
+  createContext,
+  useReducer,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+} from "react";
+import { useLocalStorage } from "../hooks/useLocalStorage";
 
-// 1️⃣ 创建 Context
 const TaskContext = createContext();
 
-// 2️⃣ reducer 函数
-const taskReducer = (state, action) => {
+export function taskReducer(state, action) {
   switch (action.type) {
     case "ADD_TASK":
-      return [...state, { title: action.payload, done: false }];
+      return [
+        ...state,
+        {
+          id: Date.now(),        // ✅ 唯一 ID（基于时间戳）
+          title: action.payload,
+          done: false,
+        },
+      ];
+
     case "TOGGLE_TASK":
-      return state.map((t, i) =>
-        i === action.payload ? { ...t, done: !t.done } : t
+      return state.map((task) =>
+        task.id === action.payload
+          ? { ...task, done: !task.done }
+          : task
       );
+
     case "DELETE_TASK":
-      return state.filter((_, i) => i !== action.payload);
+      return state.filter((task) => task.id !== action.payload);
+
     default:
       return state;
   }
-};
+}
 
-// 3️⃣ Provider 组件
+
 export const TaskProvider = ({ children }) => {
-  const [tasks, dispatch] = useReducer(taskReducer, []);
+  const [storedTasks, setStoredTasks] = useLocalStorage("tasks", []);
+  const [tasks, dispatch] = useReducer(taskReducer, storedTasks);
+
+  useEffect(() => {
+    setStoredTasks(tasks);
+  }, [tasks, setStoredTasks]);
+
+  // ✅ 全局操作函数
+  const addTask = useCallback(
+    (title) => dispatch({ type: "ADD_TASK", payload: title }),
+    [dispatch]
+  );
+
+  const toggleTask = useCallback(
+    (index) => dispatch({ type: "TOGGLE_TASK", payload: index }),
+    [dispatch]
+  );
+
+  const deleteTask = useCallback(
+    (index) => dispatch({ type: "DELETE_TASK", payload: index }),
+    [dispatch]
+  );
+
+  // ✅ useMemo 统计衍生数据
+  const stats = useMemo(() => {
+    const done = tasks.filter((t) => t.done).length;
+    const total = tasks.length;
+    const progress = total ? Math.round((done / total) * 100) : 0;
+    return { done, total, progress };
+  }, [tasks]);
 
   return (
-    <TaskContext.Provider value={{ tasks, dispatch }}>
+    <TaskContext.Provider
+      value={{ tasks, addTask, toggleTask, deleteTask, stats }}
+    >
       {children}
     </TaskContext.Provider>
   );
 };
 
-// 4️⃣ 自定义 Hook（方便子组件使用）
 export const useTasks = () => useContext(TaskContext);
