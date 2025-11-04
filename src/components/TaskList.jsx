@@ -1,24 +1,27 @@
-import React, { memo } from "react";
-import TaskItem from './TaskItem';
+import React from "react";
+import { useTasks } from "../context/TaskContext";
+import TaskItem from "./TaskItem";
 
-const TaskList = memo(({ tasks = [], onToggle, onDelete }) => {
-  if (tasks.length === 0) return <p>No tasks yet!</p>;
+const TaskList = () => {
+  const { tasks, toggleTask, deleteTask } = useTasks();
+
+  if (tasks.length === 0) {
+    return <p style={{ textAlign: "center", color: "#9ca3af" }}>No tasks yet ✨</p>;
+  }
 
   return (
-    <ul>
+    <div className="task-list">
       {tasks.map((task, index) => (
         <TaskItem
-          key={index}
+          key={task.id}
           task={task}
           index={index}
-          onToggle={onToggle}
-          onDelete={onDelete}
-        >
-          {task}
-        </TaskItem>
+          onToggle={toggleTask}
+          onDelete={deleteTask}
+        />
       ))}
-    </ul>
+    </div>
   );
-});
+};
 
 export default TaskList;
