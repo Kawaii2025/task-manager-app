@@ -1,38 +1,205 @@
-.App {
+/* 全局 */
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background-color: #f0f2f5;
+  margin: 0;
+  padding: 0;
+}
+
+/* 容器 - 关键：移除左右内边距，改为内部元素控制 */
+.container {
+  max-width: 1000px;
+  margin: 50px auto;
+  background: #fff;
+  border-radius: 8px;
+  padding: 30px 20px; /* 只保留上下内边距 */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* 内容区容器 - 统一控制内部元素的左右边距 */
+.content-wrapper {
+  padding: 0 25px; /* 这里统一设置左右内边距 */
+}
+
+/* 标题 */
+h1 {
   text-align: center;
+  color: #333;
+  margin: 0 25px 30px; /* 标题单独设置左右边距 */
+  font-size: 28px;
+  font-weight: 600;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* 移除导航 */
+nav {
+  display: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* 表单布局 - 基于内容区的内边距 */
+form {
   display: flex;
-  flex-direction: column;
+  gap: 10px;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  margin-bottom: 25px;
+  width: 100%;
+}
+
+input[type="text"] {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.2s;
+  height: 40px;
+  box-sizing: border-box;
+}
+
+/* When the input is wrapped inside a .task-input div (as in TaskForm.jsx),
+   make the wrapper act like the input used to: grow to fill space and
+   keep the input inside flexible. This ensures the Add button aligns
+   with task-item buttons on the right. */
+.task-input {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.task-input input[type="text"] {
+  flex: 1;
+  min-width: 0; /* prevent overflow in flexbox */
+}
+
+input[type="text"]::placeholder {
+  color: #999;
+}
+
+input[type="text"]:focus {
+  border-color: #4caf50;
+  box-shadow: none;
+}
+
+/* 按钮统一样式 - 固定宽度确保对齐 */
+button {
+  padding: 0 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  height: 40px;
+  width: 85px; /* 所有按钮统一宽度 */
+}
+
+button:hover {
+  opacity: 0.9;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 按钮颜色 */
+button.add-btn {
+  background-color: #4CAF50;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+button.add-btn:hover {
+  background-color: #45a049;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+button.done-btn,
+button.undo-btn {
+  background-color: #2196f3;
+  color: white;
+}
+
+button.delete-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+/* 任务列表 */
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* 任务项布局 - 与输入框保持一致的内边距环境 */
+li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* Match content-wrapper horizontal padding so buttons align on the right */
+  padding: 15px 25px;
+  margin-bottom: 10px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  transition: background 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+li:hover {
+  background-color: #f0f0f0;
+}
+
+/* 任务标题 */
+.task-title {
+  word-break: break-word;
+  font-size: 16px;
+  color: #333;
+}
+
+.task-title.done {
+  text-decoration: line-through;
+  color: #999;
+}
+
+/* 按钮组 - 确保右对齐 */
+.task-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+  .container {
+    margin: 20px 15px;
+    padding: 20px 0;
   }
-  to {
-    transform: rotate(360deg);
+  
+  .content-wrapper, h1 {
+    padding: 0 15px;
+  }
+
+    form, li {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+      /* On small screens, keep list item padding consistent with the reduced content-wrapper padding */
+      padding: 15px;
+    }
+
+  input[type="text"], button {
+    width: 100%;
+  }
+
+  .task-buttons {
+    justify-content: stretch;
+  }
+
+  .task-buttons button {
+    flex: 1;
+  }
+
+  .stats {
+    margin-top: 15px;
+    text-align: right;
+    font-size: 15px;
+    color: #555;
   }
 }
